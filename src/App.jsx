@@ -209,11 +209,91 @@ function App() {
           );
         })}
       </div>
+    <div style={{ marginTop: '2rem' }}>
+        <button
+          onClick={sortearDuplas}
+          disabled={
+            confirmados.length < 4 || confirmados.some((apelido) => !ladosEscolhidos[apelido])
+          }
+          style={{
+            backgroundColor: '#3498db',
+            color: '#fff',
+            padding: '0.75rem 1.5rem',
+            fontSize: '1rem',
+            border: 'none',
+            borderRadius: '0.5rem',
+            cursor: 'pointer'
+          }}
+        >
+          Sortear Duplas
+        </button>
+      </div>
+
+      {duplas.length > 0 && (
+        <div style={{ marginTop: '2rem' }}>
+          <h2>Duplas Sorteadas:</h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            {duplas.map((dupla, index) => (
+              <div key={index} style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <strong>Dupla {index + 1}:</strong>
+                {dupla.map((apelido) => {
+                  const jogador = jogadores.find(j => j.apelido === apelido);
+                  return (
+                    <div key={apelido} style={{ textAlign: 'center' }}>
+                      <img
+                        src={jogador?.foto}
+                        alt={apelido}
+                        style={{
+                          width: '50px',
+                          height: '50px',
+                          borderRadius: '50%',
+                          objectFit: 'cover',
+                        }}
+                      />
+                      <div style={{ fontSize: '0.85rem' }}>{apelido}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div style={{ marginTop: '2rem' }}>
+        <button
+          onClick={limparHistorico}
+          style={{
+            padding: '0.5rem 1rem',
+            backgroundColor: '#e74c3c',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '0.5rem',
+            cursor: 'pointer',
+          }}
+        >
+          🧹 Limpar Histórico de Duplas
+        </button>
+      </div>
+
+      <div style={{ marginTop: '2rem' }}>
+        <h3>Histórico de Duplas por Data:</h3>
+        {Object.entries(agruparPorData()).map(([data, duplas], idx) => (
+          <div key={idx} style={{ marginBottom: '1.5rem' }}>
+            <h4 style={{ marginBottom: '0.5rem' }}>📅 {data}</h4>
+            <ul>
+              {duplas.map((dupla, i) => (
+                <li key={i}>{dupla.join(' & ')}</li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
 
 export default App;
 
-// git add . && git commit -m "ajuste congelar paineis" && git push origin main
+// git add . && git commit -m "ajuste tema claro/escuro" && git push origin main
 
