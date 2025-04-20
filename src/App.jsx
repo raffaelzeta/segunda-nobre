@@ -80,11 +80,11 @@ function App() {
       style={{
         display: 'grid',
         gridTemplateColumns: 
-          window.innerWidth < 500
-            ? '1fr'
-            : window.innerWidth < 800
-            ? '1fr 1fr'
-            : 'repeat(auto-fill, minmax(140px, 1fr))',
+        window.innerWidth < 500
+          ? '1fr 1fr'
+          : window.innerWidth < 800
+          ? 'repeat(3, 1fr)'
+          : 'repeat(auto-fill, minmax(100px, 1fr))',
         gap: '1rem',
       }}
     >
@@ -95,20 +95,22 @@ function App() {
 
           return (
             <div
-              key={index}
-              onClick={() => togglePresenca(jogador.apelido)}
-              style={{
-                backgroundColor: estaConfirmado ? '#d1f7d6' : '#f9f9f9',
-                border: '2px solid',
-                borderColor: estaConfirmado ? '#2ecc71' : '#ccc',
-                borderRadius: '1rem',
-                padding: '1rem',
-                textAlign: 'center',
-                boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-                cursor: 'pointer',
-                transition: '0.2s',
-              }}
-            >
+            key={index}
+            onClick={() => togglePresenca(jogador.apelido)}
+            style={{
+              backgroundColor: estaConfirmado ? '#d1f7d6' : '#f9f9f9',
+              border: '2px solid',
+              borderColor: estaConfirmado ? '#2ecc71' : '#ccc',
+              borderRadius: '0.75rem',
+              padding: '0.6rem',
+              textAlign: 'center',
+              boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
+              cursor: 'pointer',
+              transition: '0.2s',
+              maxWidth: '120px',
+            }}
+          >
+          
               <img
                 src={jogador.foto}
                 alt={jogador.apelido}
@@ -306,5 +308,5 @@ function App() {
 }
 
 export default App;
-// git add . && git commit -m "ajuste visual" && git push origin main
+// git add . && git commit -m "resultado do sorteio com card" && git push origin main
 
