@@ -57,7 +57,7 @@ function App() {
   return (
     <div style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
       <h1 style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>
-      ⚽ Segunda Nobre ⚽
+      Segunda Nobre
       </h1>
 
     <div style={{ 
@@ -70,13 +70,19 @@ function App() {
     </div>
       {/* <p style={{ marginBottom: '1.5rem' }}>Toque para confirmar presença:</p> */}
 
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))',
-          gap: '1.5rem',
-        }}
-      >
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 
+          window.innerWidth < 500
+            ? '1fr'
+            : window.innerWidth < 800
+            ? '1fr 1fr'
+            : 'repeat(auto-fill, minmax(140px, 1fr))',
+        gap: '1rem',
+      }}
+    >
+
         {jogadores.map((jogador, index) => {
           const estaConfirmado = confirmados.includes(jogador.apelido);
           const lado = ladosEscolhidos[jogador.apelido];
@@ -109,16 +115,20 @@ function App() {
                   border: estaConfirmado ? '2px solid #2ecc71' : 'none',
                 }}
               />
-              <div style={{ fontWeight: 'bold' }}>{jogador.apelido}</div>
+              
+              <div style={{ fontWeight: 'bold', color: estaConfirmado ? '#14532d' : '#333' }}>
+                {jogador.apelido}
+              </div>
+
               <div
                 style={{
                   fontSize: '0.85rem',
-                  color: estaConfirmado ? '#27ae60' : '#999',
-                  marginBottom: '0.5rem',
+                  color: estaConfirmado ? '#14532d' : '#999',
                 }}
               >
                 {estaConfirmado ? 'Confirmado' : 'Toque para confirmar'}
               </div>
+
 
               {estaConfirmado && (
                 <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem' }}>
