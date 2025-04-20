@@ -270,5 +270,5 @@ function App() {
 export default App;
 
 
-// git add . && git commit -m "ajuste tema claro/escuro2" && git push origin main
+// git add . && git commit -m "ajuste firebase" && git push origin main
 
