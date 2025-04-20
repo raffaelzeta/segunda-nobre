@@ -60,14 +60,20 @@ function App() {
       Segunda Nobre
       </h1>
 
-    <div style={{ 
-      fontSize: '1rem', 
-      fontWeight: 'bold', 
-      marginBottom: '1.2rem', 
-      color: '#333' 
-    }}>
-      👈 Esquerda: {Object.values(ladosEscolhidos).filter(l => l === 'esquerda').length} jogadores | 👉 Direita: {Object.values(ladosEscolhidos).filter(l => l === 'direita').length} jogadores
-    </div>
+      <div style={{ 
+        fontSize: '1rem',
+        fontWeight: 'bold',
+        marginBottom: '1.2rem',
+        color: '#222', // cor escura universal
+        backgroundColor: '#f1f1f1',
+        padding: '0.4rem 0.8rem',
+        borderRadius: '0.5rem',
+        display: 'inline-block'
+      }}>
+        👈 Esquerda: {Object.values(ladosEscolhidos).filter(l => l === 'esquerda').length} jogadores |
+        👉 Direita: {Object.values(ladosEscolhidos).filter(l => l === 'direita').length} jogadores
+      </div>
+
       {/* <p style={{ marginBottom: '1.5rem' }}>Toque para confirmar presença:</p> */}
 
     <div
@@ -199,20 +205,106 @@ function App() {
       </div>
 
       {duplas.length > 0 && (
-        <div style={{ marginTop: '2rem' }}>
-          <h2>Duplas Sorteadas:</h2>
-          <ul>
-            {duplas.map((dupla, index) => (
-              <li key={index}>
-                <strong>Dupla {index + 1}:</strong>{' '}
-                {dupla.length === 2 ? `${dupla[0]} & ${dupla[1]}` : `${dupla[0]} (sem dupla)`}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+  <div style={{ marginTop: '2rem' }}>
+    <h2 style={{ marginBottom: '1rem' }}>Duplas Sorteadas:</h2>
+
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      {duplas.map((dupla, index) => {
+        const titulo = dupla.length === 2 ? `Dupla ${index + 1}` : 'Sem Dupla';
+
+        return (
+          <div key={index}>
+            <div style={{ fontWeight: 'bold', marginBottom: '0.5rem', textAlign: 'center' }}>
+              {titulo}
+            </div>
+
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                gap: '1.2rem',
+                flexWrap: 'wrap',
+                backgroundColor: dupla.length === 2 ? '#f0f0f0' : '#ffe8e8',
+                padding: '1rem',
+                borderRadius: '1rem',
+                boxShadow: '0 1px 5px rgba(0,0,0,0.1)',
+              }}
+            >
+              {dupla.map((apelido) => {
+                const jogador = jogadores.find((j) => j.apelido === apelido);
+                if (!jogador) return null;
+
+                return (
+                  <div
+                    key={jogador.apelido}
+                    style={{
+                      backgroundColor: '#fff',
+                      border: '2px solid #ccc',
+                      borderRadius: '1rem',
+                      padding: '1rem',
+                      textAlign: 'center',
+                      width: '120px',
+                      boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
+                    }}
+                  >
+                    <img
+                      src={jogador.foto}
+                      alt={jogador.apelido}
+                      style={{
+                        width: '80px',
+                        height: '80px',
+                        borderRadius: '50%',
+                        objectFit: 'cover',
+                        marginBottom: '0.5rem',
+                      }}
+                    />
+                    <div style={{ fontWeight: 'bold', fontSize: '0.95rem' }}>
+                      {jogador.apelido}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+
+    {/* Botão de copiar duplas */}
+    <div style={{ textAlign: 'center', marginTop: '2rem' }}>
+      <button
+        onClick={() => {
+          const texto = duplas
+            .map((dupla, i) =>
+              dupla.length === 2
+                ? `Dupla ${i + 1}: ${dupla[0]} & ${dupla[1]}`
+                : `Sem Dupla: ${dupla[0]}`
+            )
+            .join('\n');
+          navigator.clipboard.writeText(texto);
+          alert('Duplas copiadas para a área de transferência!');
+        }}
+        style={{
+          padding: '0.7rem 1.2rem',
+          fontSize: '1rem',
+          backgroundColor: '#2ecc71',
+          color: '#fff',
+          border: 'none',
+          borderRadius: '0.5rem',
+          cursor: 'pointer',
+          marginTop: '1rem',
+        }}
+      >
+        📋 Copiar Duplas pro WhatsApp
+      </button>
+    </div>
+  </div>
+)}
+
     </div>
   );
 }
 
 export default App;
+// git add . && git commit -m "ajuste visual" && git push origin main
+
