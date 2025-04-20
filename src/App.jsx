@@ -6,17 +6,22 @@ function App() {
   const [duplas, setDuplas] = useState([]);
   const [ladosEscolhidos, setLadosEscolhidos] = useState({});
   const [historicoDeDuplas, setHistoricoDeDuplas] = useState([]);
+  const [temaEscuro, setTemaEscuro] = useState(false);
 
   useEffect(() => {
     const salvo = localStorage.getItem('historicoDuplas');
     if (salvo) {
       setHistoricoDeDuplas(JSON.parse(salvo));
     }
-  }, []);
 
-  useEffect(() => {
-    localStorage.setItem('historicoDuplas', JSON.stringify(historicoDeDuplas));
-  }, [historicoDeDuplas]);
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    setTemaEscuro(mediaQuery.matches);
+    mediaQuery.addEventListener('change', (e) => setTemaEscuro(e.matches));
+
+    return () => {
+      mediaQuery.removeEventListener('change', (e) => setTemaEscuro(e.matches));
+    };
+  }, []);
 
   const togglePresenca = (apelido) => {
     setConfirmados((prev) =>
@@ -114,15 +119,21 @@ function App() {
     return agrupado;
   };
 
-  return (
+  const corFundo = temaEscuro ? '#121212' : '#fff';
+  const corTexto = temaEscuro ? '#f1f1f1' : '#000';
+  const corCardFundo = temaEscuro ? '#1e1e1e' : '#f9f9f9';
+  const corCardBorda = temaEscuro ? '#444' : '#ccc';
 
-    <div style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
+  return (
+    <div style={{ padding: '2rem', fontFamily: 'sans-serif', backgroundColor: corFundo, color: corTexto, minHeight: '100vh' }}>
       <div style={{
         position: 'sticky',
         top: 0,
-        background: '#fff',
+        backgroundColor: corFundo,
+        color: corTexto,
         paddingBottom: '1rem',
-        zIndex: 1000
+        zIndex: 1000,
+        paddingTop: '1rem'
       }}>
         <h1 style={{ fontSize: '2.5rem', margin: 0 }}>Segunda Nobre</h1>
         <div style={{ fontWeight: 'bold', marginTop: '0.5rem' }}>
@@ -131,12 +142,12 @@ function App() {
         </div>
       </div>
 
-
       <div
         style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(3, 1fr)',
           gap: '1rem',
+          marginTop: '1.5rem'
         }}
       >
         {jogadores.map((jogador, index) => {
@@ -148,13 +159,14 @@ function App() {
               key={index}
               onClick={() => togglePresenca(jogador.apelido)}
               style={{
-                backgroundColor: estaConfirmado ? '#d1f7d6' : '#f9f9f9',
+                backgroundColor: estaConfirmado ? '#2c6' : corCardFundo,
                 border: '2px solid',
-                borderColor: estaConfirmado ? '#2ecc71' : '#ccc',
+                borderColor: estaConfirmado ? '#2ecc71' : corCardBorda,
                 borderRadius: '1rem',
                 padding: '0.6rem',
                 textAlign: 'center',
                 cursor: 'pointer',
+                color: corTexto
               }}
             >
               <img
@@ -168,25 +180,27 @@ function App() {
                   marginBottom: '0.4rem',
                 }}
               />
-              <div style={{ color: '#000' }}><strong>{jogador.apelido}</strong></div>
+              <div><strong>{jogador.apelido}</strong></div>
               {estaConfirmado && (
                 <div style={{ display: 'flex', justifyContent: 'center', gap: '0.3rem', marginTop: '0.3rem' }}>
                   <button onClick={(e) => { e.stopPropagation(); escolherLado(jogador.apelido, 'esquerda'); }}
                     style={{
-                      backgroundColor: lado === 'esquerda' ? '#2ecc71' : '#eee',
+                      backgroundColor: lado === 'esquerda' ? '#2ecc71' : '#888',
                       border: '1px solid #ccc',
                       padding: '0.2rem 0.4rem',
                       fontSize: '0.75rem',
                       borderRadius: '0.4rem',
+                      color: '#fff'
                     }}
                   >Esq.</button>
                   <button onClick={(e) => { e.stopPropagation(); escolherLado(jogador.apelido, 'direita'); }}
                     style={{
-                      backgroundColor: lado === 'direita' ? '#3498db' : '#eee',
+                      backgroundColor: lado === 'direita' ? '#3498db' : '#888',
                       border: '1px solid #ccc',
                       padding: '0.2rem 0.4rem',
                       fontSize: '0.75rem',
                       borderRadius: '0.4rem',
+                      color: '#fff'
                     }}
                   >Dir.</button>
                 </div>
@@ -195,93 +209,11 @@ function App() {
           );
         })}
       </div>
-
-      <div style={{ marginTop: '2rem' }}>
-        <button
-          onClick={sortearDuplas}
-          disabled={
-            confirmados.length < 4 || confirmados.some((apelido) => !ladosEscolhidos[apelido])
-          }
-          style={{
-            backgroundColor: '#3498db',
-            color: '#fff',
-            padding: '0.75rem 1.5rem',
-            fontSize: '1rem',
-            border: 'none',
-            borderRadius: '0.5rem',
-            cursor: 'pointer'
-          }}
-        >
-          Sortear Duplas
-        </button>
-      </div>
-
-      {duplas.length > 0 && (
-        <div style={{ marginTop: '2rem' }}>
-          <h2>Duplas Sorteadas:</h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            {duplas.map((dupla, index) => (
-              <div key={index} style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <strong>Dupla {index + 1}:</strong>
-                {dupla.map((apelido) => {
-                  const jogador = jogadores.find(j => j.apelido === apelido);
-                  return (
-                    <div key={apelido} style={{ textAlign: 'center' }}>
-                      <img
-                        src={jogador?.foto}
-                        alt={apelido}
-                        style={{
-                          width: '50px',
-                          height: '50px',
-                          borderRadius: '50%',
-                          objectFit: 'cover',
-                        }}
-                      />
-                      <div style={{ fontSize: '0.85rem' }}>{apelido}</div>
-                    </div>
-                  );
-                })}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      <div style={{ marginTop: '2rem' }}>
-        <button
-          onClick={limparHistorico}
-          style={{
-            padding: '0.5rem 1rem',
-            backgroundColor: '#e74c3c',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '0.5rem',
-            cursor: 'pointer',
-          }}
-        >
-          🧹 Limpar Histórico de Duplas
-        </button>
-      </div>
-
-      <div style={{ marginTop: '2rem' }}>
-        <h3>Histórico de Duplas por Data:</h3>
-        {Object.entries(agruparPorData()).map(([data, duplas], idx) => (
-          <div key={idx} style={{ marginBottom: '1.5rem' }}>
-            <h4 style={{ marginBottom: '0.5rem' }}>📅 {data}</h4>
-            <ul>
-              {duplas.map((dupla, i) => (
-                <li key={i}>{dupla.join(' & ')}</li>
-              ))}
-            </ul>
-          </div>
-        ))}
-      </div>
     </div>
   );
 }
 
 export default App;
 
-
-// git add . && git commit -m "ajuste layout hist" && git push origin main
+// git add . && git commit -m "ajuste congelar paineis" && git push origin main
 
