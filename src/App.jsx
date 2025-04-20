@@ -57,10 +57,18 @@ function App() {
   return (
     <div style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
       <h1 style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>
-        Segunda Nobre ⚽🏐
+      ⚽ Segunda Nobre ⚽
       </h1>
 
-      <p style={{ marginBottom: '1.5rem' }}>Toque para confirmar presença:</p>
+    <div style={{ 
+      fontSize: '1rem', 
+      fontWeight: 'bold', 
+      marginBottom: '1.2rem', 
+      color: '#333' 
+    }}>
+      👈 Esquerda: {Object.values(ladosEscolhidos).filter(l => l === 'esquerda').length} jogadores | 👉 Direita: {Object.values(ladosEscolhidos).filter(l => l === 'direita').length} jogadores
+    </div>
+      {/* <p style={{ marginBottom: '1.5rem' }}>Toque para confirmar presença:</p> */}
 
       <div
         style={{
@@ -121,6 +129,7 @@ function App() {
                     }}
                     style={{
                       padding: '0.3rem 0.6rem',
+                      fontSize: '0.75rem',
                       backgroundColor: lado === 'esquerda' ? '#2ecc71' : '#ecf0f1',
                       border: '1px solid #ccc',
                       borderRadius: '0.3rem',
@@ -136,6 +145,7 @@ function App() {
                     }}
                     style={{
                       padding: '0.3rem 0.6rem',
+                      fontSize: '0.75rem',
                       backgroundColor: lado === 'direita' ? '#3498db' : '#ecf0f1',
                       border: '1px solid #ccc',
                       borderRadius: '0.3rem',
@@ -173,7 +183,7 @@ function App() {
                 ? 0.6
                 : 1,
           }}
-        >
+          >
           Sortear Duplas
         </button>
       </div>
