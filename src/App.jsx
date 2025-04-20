@@ -1,10 +1,22 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import jogadores from './jogadores';
 
 function App() {
   const [confirmados, setConfirmados] = useState([]);
   const [duplas, setDuplas] = useState([]);
   const [ladosEscolhidos, setLadosEscolhidos] = useState({});
+  const [historicoDeDuplas, setHistoricoDeDuplas] = useState([]);
+
+  useEffect(() => {
+    const salvo = localStorage.getItem('historicoDuplas');
+    if (salvo) {
+      setHistoricoDeDuplas(JSON.parse(salvo));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('historicoDuplas', JSON.stringify(historicoDeDuplas));
+  }, [historicoDeDuplas]);
 
   const togglePresenca = (apelido) => {
     setConfirmados((prev) =>
@@ -27,6 +39,15 @@ function App() {
     }));
   };
 
+  const duplaJaExiste = (j1, j2) => {
+    return historicoDeDuplas.some((entrada) =>
+      entrada.duplas.some((dupla) => {
+        const [a, b] = dupla;
+        return (a === j1 && b === j2) || (a === j2 && b === j1);
+      })
+    );
+  };
+
   const sortearDuplas = () => {
     const jogadoresValidos = confirmados.filter((apelido) => ladosEscolhidos[apelido]);
     const esquerda = jogadoresValidos.filter((apelido) => ladosEscolhidos[apelido] === 'esquerda');
@@ -37,47 +58,75 @@ function App() {
     let ladoE = shuffle([...esquerda]);
     let ladoD = shuffle([...direita]);
 
-    const novasDuplas = [];
+    let tentativas = 0;
+    const maxTentativas = 100;
 
-    while (ladoE.length > 0 && ladoD.length > 0) {
-      const jogadorE = ladoE.pop();
-      const jogadorD = ladoD.pop();
-      novasDuplas.push([jogadorE, jogadorD]);
+    while (tentativas < maxTentativas) {
+      const ladoEtemp = shuffle([...ladoE]);
+      const ladoDtemp = shuffle([...ladoD]);
+      const tentativaDuplas = [];
+      let repetida = false;
+
+      while (ladoEtemp.length > 0 && ladoDtemp.length > 0) {
+        const j1 = ladoEtemp.pop();
+        const j2 = ladoDtemp.pop();
+        if (duplaJaExiste(j1, j2)) {
+          repetida = true;
+          break;
+        }
+        tentativaDuplas.push([j1, j2]);
+      }
+
+      if (!repetida) {
+        const sobras = [...ladoEtemp, ...ladoDtemp];
+        sobras.forEach((apelido) => tentativaDuplas.push([apelido]));
+
+        setDuplas(tentativaDuplas);
+
+        const dataHoje = new Date().toLocaleDateString('pt-BR');
+        setHistoricoDeDuplas((prev) => [
+          ...prev,
+          { data: dataHoje, duplas: tentativaDuplas.filter((d) => d.length === 2) },
+        ]);
+
+        return;
+      }
+
+      tentativas++;
     }
 
-    const sobras = [...ladoE, ...ladoD];
-    sobras.forEach((apelido) => {
-      novasDuplas.push([apelido]);
-    });
+    alert('Não foi possível gerar duplas sem repetir. Tente reorganizar os lados.');
+  };
 
-    setDuplas(novasDuplas);
+  const limparHistorico = () => {
+    if (window.confirm('Tem certeza que deseja limpar o histórico de duplas?')) {
+      setHistoricoDeDuplas([]);
+    }
+  };
+
+  const agruparPorData = () => {
+    const agrupado = {};
+    historicoDeDuplas.forEach((entrada) => {
+      const data = entrada.data;
+      if (!agrupado[data]) agrupado[data] = [];
+      agrupado[data].push(...entrada.duplas);
+    });
+    return agrupado;
   };
 
   return (
     <div style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
-      <h1 style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>
-        Segunda Nobre
-      </h1>
+      <h1 style={{ fontSize: '2.5rem' }}>Segunda Nobre</h1>
 
-      <div style={{ 
-        fontSize: '1rem',
-        fontWeight: 'bold',
-        marginBottom: '1.2rem',
-        color: '#222',
-        backgroundColor: '#f1f1f1',
-        padding: '0.4rem 0.8rem',
-        borderRadius: '0.5rem',
-        display: 'inline-block'
-      }}>
-        👈 Esquerda: {Object.values(ladosEscolhidos).filter(l => l === 'esquerda').length} jogadores |
-        👉 Direita: {Object.values(ladosEscolhidos).filter(l => l === 'direita').length} jogadores
+      <div style={{ fontWeight: 'bold', marginBottom: '1rem' }}>
+        👈 Esquerda: {Object.values(ladosEscolhidos).filter((l) => l === 'esquerda').length} |
+        👉 Direita: {Object.values(ladosEscolhidos).filter((l) => l === 'direita').length}
       </div>
 
-      {/* Grade de jogadores responsiva */}
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))',
+          gridTemplateColumns: 'repeat(3, 1fr)',
           gap: '1rem',
         }}
       >
@@ -96,7 +145,6 @@ function App() {
                 borderRadius: '1rem',
                 padding: '0.6rem',
                 textAlign: 'center',
-                boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
                 cursor: 'pointer',
               }}
             >
@@ -109,55 +157,29 @@ function App() {
                   borderRadius: '50%',
                   objectFit: 'cover',
                   marginBottom: '0.4rem',
-                  border: estaConfirmado ? '2px solid #2ecc71' : 'none',
                 }}
               />
-              <div style={{ fontWeight: 'bold', fontSize: '0.9rem', color: estaConfirmado ? '#14532d' : '#333' }}>
-                {jogador.apelido}
-              </div>
-              <div
-                style={{
-                  fontSize: '0.75rem',
-                  color: estaConfirmado ? '#14532d' : '#999',
-                  marginBottom: '0.3rem',
-                }}
-              >
-                {estaConfirmado ? 'Confirmado' : 'Toque para confirmar'}
-              </div>
+              <div><strong>{jogador.apelido}</strong></div>
               {estaConfirmado && (
-                <div style={{ display: 'flex', gap: '0.4rem', justifyContent: 'center' }}>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      escolherLado(jogador.apelido, 'esquerda');
-                    }}
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '0.3rem', marginTop: '0.3rem' }}>
+                  <button onClick={(e) => { e.stopPropagation(); escolherLado(jogador.apelido, 'esquerda'); }}
                     style={{
-                      padding: '0.2rem 0.5rem',
-                      fontSize: '0.7rem',
-                      backgroundColor: lado === 'esquerda' ? '#2ecc71' : '#ecf0f1',
+                      backgroundColor: lado === 'esquerda' ? '#2ecc71' : '#eee',
                       border: '1px solid #ccc',
-                      borderRadius: '0.3rem',
-                      cursor: 'pointer',
+                      padding: '0.2rem 0.4rem',
+                      fontSize: '0.75rem',
+                      borderRadius: '0.4rem',
                     }}
-                  >
-                    Esquerda
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      escolherLado(jogador.apelido, 'direita');
-                    }}
+                  >Esq.</button>
+                  <button onClick={(e) => { e.stopPropagation(); escolherLado(jogador.apelido, 'direita'); }}
                     style={{
-                      padding: '0.2rem 0.5rem',
-                      fontSize: '0.7rem',
-                      backgroundColor: lado === 'direita' ? '#3498db' : '#ecf0f1',
+                      backgroundColor: lado === 'direita' ? '#3498db' : '#eee',
                       border: '1px solid #ccc',
-                      borderRadius: '0.3rem',
-                      cursor: 'pointer',
+                      padding: '0.2rem 0.4rem',
+                      fontSize: '0.75rem',
+                      borderRadius: '0.4rem',
                     }}
-                  >
-                    Direita
-                  </button>
+                  >Dir.</button>
                 </div>
               )}
             </div>
@@ -169,36 +191,88 @@ function App() {
         <button
           onClick={sortearDuplas}
           disabled={
-            confirmados.length < 4 ||
-            confirmados.some((apelido) => !ladosEscolhidos[apelido])
+            confirmados.length < 4 || confirmados.some((apelido) => !ladosEscolhidos[apelido])
           }
           style={{
-            padding: '0.75rem 1.5rem',
-            fontSize: '1rem',
             backgroundColor: '#3498db',
             color: '#fff',
+            padding: '0.75rem 1.5rem',
+            fontSize: '1rem',
             border: 'none',
             borderRadius: '0.5rem',
-            cursor: 'pointer',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
-            opacity:
-              confirmados.length < 4 ||
-              confirmados.some((apelido) => !ladosEscolhidos[apelido])
-                ? 0.6
-                : 1,
+            cursor: 'pointer'
           }}
         >
           Sortear Duplas
         </button>
       </div>
 
-      {/* Resto do código permanece igual (exibição das duplas) */}
-      {/* ... */}
+      {duplas.length > 0 && (
+        <div style={{ marginTop: '2rem' }}>
+          <h2>Duplas Sorteadas:</h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            {duplas.map((dupla, index) => (
+              <div key={index} style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <strong>Dupla {index + 1}:</strong>
+                {dupla.map((apelido) => {
+                  const jogador = jogadores.find(j => j.apelido === apelido);
+                  return (
+                    <div key={apelido} style={{ textAlign: 'center' }}>
+                      <img
+                        src={jogador?.foto}
+                        alt={apelido}
+                        style={{
+                          width: '50px',
+                          height: '50px',
+                          borderRadius: '50%',
+                          objectFit: 'cover',
+                        }}
+                      />
+                      <div style={{ fontSize: '0.85rem' }}>{apelido}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div style={{ marginTop: '2rem' }}>
+        <button
+          onClick={limparHistorico}
+          style={{
+            padding: '0.5rem 1rem',
+            backgroundColor: '#e74c3c',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '0.5rem',
+            cursor: 'pointer',
+          }}
+        >
+          🧹 Limpar Histórico de Duplas
+        </button>
+      </div>
+
+      <div style={{ marginTop: '2rem' }}>
+        <h3>Histórico de Duplas por Data:</h3>
+        {Object.entries(agruparPorData()).map(([data, duplas], idx) => (
+          <div key={idx} style={{ marginBottom: '1.5rem' }}>
+            <h4 style={{ marginBottom: '0.5rem' }}>📅 {data}</h4>
+            <ul>
+              {duplas.map((dupla, i) => (
+                <li key={i}>{dupla.join(' & ')}</li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
 
 export default App;
 
-// git add . && git commit -m "ajuste layout horizontal" && git push origin main
+
+// git add . && git commit -m "ajuste layout 3h" && git push origin main
 
