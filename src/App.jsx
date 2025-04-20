@@ -115,13 +115,22 @@ function App() {
   };
 
   return (
-    <div style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
-      <h1 style={{ fontSize: '2.5rem' }}>Segunda Nobre</h1>
 
-      <div style={{ fontWeight: 'bold', marginBottom: '1rem' }}>
-        👈 Esquerda: {Object.values(ladosEscolhidos).filter((l) => l === 'esquerda').length} |
-        👉 Direita: {Object.values(ladosEscolhidos).filter((l) => l === 'direita').length}
+    <div style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
+      <div style={{
+        position: 'sticky',
+        top: 0,
+        background: '#fff',
+        paddingBottom: '1rem',
+        zIndex: 1000
+      }}>
+        <h1 style={{ fontSize: '2.5rem', margin: 0 }}>Segunda Nobre</h1>
+        <div style={{ fontWeight: 'bold', marginTop: '0.5rem' }}>
+          👈 Esquerda: {Object.values(ladosEscolhidos).filter((l) => l === 'esquerda').length} |
+          👉 Direita: {Object.values(ladosEscolhidos).filter((l) => l === 'direita').length}
+        </div>
       </div>
+
 
       <div
         style={{
@@ -159,7 +168,7 @@ function App() {
                   marginBottom: '0.4rem',
                 }}
               />
-              <div><strong>{jogador.apelido}</strong></div>
+              <div style={{ color: '#000' }}><strong>{jogador.apelido}</strong></div>
               {estaConfirmado && (
                 <div style={{ display: 'flex', justifyContent: 'center', gap: '0.3rem', marginTop: '0.3rem' }}>
                   <button onClick={(e) => { e.stopPropagation(); escolherLado(jogador.apelido, 'esquerda'); }}
@@ -274,5 +283,5 @@ function App() {
 export default App;
 
 
-// git add . && git commit -m "ajuste layout 3h" && git push origin main
+// git add . && git commit -m "ajuste layout hist" && git push origin main
 
