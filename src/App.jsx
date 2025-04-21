@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import jogadores from './jogadores';
 import { db } from './firebase';
-import { doc, setDoc, getDoc, onSnapshot, collection, addDoc, getDocs, deleteDoc } from 'firebase/firestore';
+import { doc, setDoc, onSnapshot, collection, addDoc, getDocs, deleteDoc } from 'firebase/firestore';
 
 function App() {
   const [confirmados, setConfirmados] = useState([]);
@@ -17,6 +17,14 @@ function App() {
     await setDoc(doc(db, 'presencas', partidaId), { confirmados });
   };
 
+  const salvarLadosEscolhidos = async (lados) => {
+    await setDoc(doc(db, 'lados', partidaId), lados);
+  };
+
+  const salvarDuplasSorteadas = async (duplas) => {
+    await setDoc(doc(db, 'sorteioAtual', partidaId), { duplas });
+  };
+
   const salvarHistoricoDeDuplas = async (data, duplas) => {
     await addDoc(collection(db, 'historicoDuplas'), { data, duplas });
   };
@@ -25,17 +33,48 @@ function App() {
     const querySnapshot = await getDocs(collection(db, 'historicoDuplas'));
     const dados = [];
     querySnapshot.forEach((doc) => {
-      dados.push(doc.data());
+      dados.push({ id: doc.id, ...doc.data() });
     });
     setHistoricoDeDuplas(dados);
   };
 
+  const limparHistorico = async () => {
+    const querySnapshot = await getDocs(collection(db, 'historicoDuplas'));
+    querySnapshot.forEach(async (docu) => {
+      await deleteDoc(doc(db, 'historicoDuplas', docu.id));
+    });
+    setHistoricoDeDuplas([]);
+  };
+
   useEffect(() => {
-    const unsub = onSnapshot(doc(db, 'presencas', partidaId), (docSnap) => {
+    const unsubPresencas = onSnapshot(doc(db, 'presencas', partidaId), (docSnap) => {
       if (docSnap.exists()) {
         setConfirmados(docSnap.data().confirmados || []);
       }
     });
+
+    const unsubLados = onSnapshot(doc(db, 'lados', partidaId), (docSnap) => {
+      if (docSnap.exists()) {
+        setLadosEscolhidos(docSnap.data() || {});
+      }
+    });
+
+    const unsubDuplas = onSnapshot(doc(db, 'sorteioAtual', partidaId), (docSnap) => {
+      if (docSnap.exists()) {
+        const duplasSalvas = docSnap.data().duplas || [];
+        setDuplas(duplasSalvas);
+    
+        // Atualiza o histórico local também se ainda não tiver sido adicionado
+        const dataHoje = new Date().toLocaleDateString('pt-BR');
+        const jaExiste = historicoDeDuplas.some((entrada) => entrada.data === dataHoje);
+    
+        if (!jaExiste) {
+          const novasDuplas = duplasSalvas.filter((d) => d.length === 2);
+          // setHistoricoDeDuplas((prev) => [...prev, { data: dataHoje, duplas: novasDuplas }]);
+        }
+      }
+    });
+    
 
     carregarHistoricoDeDuplas();
 
@@ -44,7 +83,9 @@ function App() {
     mediaQuery.addEventListener('change', (e) => setTemaEscuro(e.matches));
 
     return () => {
-      unsub();
+      unsubPresencas();
+      unsubLados();
+      unsubDuplas();
       mediaQuery.removeEventListener('change', (e) => setTemaEscuro(e.matches));
     };
   }, []);
@@ -54,22 +95,24 @@ function App() {
       ? confirmados.filter((nome) => nome !== apelido)
       : [...confirmados, apelido];
 
+    const novoLados = { ...ladosEscolhidos };
+    delete novoLados[apelido];
+
     setConfirmados(atualizados);
+    setLadosEscolhidos(novoLados);
     setDuplas([]);
-    setLadosEscolhidos((prev) => {
-      const novo = { ...prev };
-      delete novo[apelido];
-      return novo;
-    });
 
     await salvarConfirmados(atualizados);
+    await salvarLadosEscolhidos(novoLados);
   };
 
   const escolherLado = (apelido, lado) => {
-    setLadosEscolhidos((prev) => ({
-      ...prev,
+    const atualizados = {
+      ...ladosEscolhidos,
       [apelido]: lado,
-    }));
+    };
+    setLadosEscolhidos(atualizados);
+    salvarLadosEscolhidos(atualizados);
   };
 
   const duplaJaExiste = (j1, j2) => {
@@ -120,8 +163,9 @@ function App() {
         const dataHoje = new Date().toLocaleDateString('pt-BR');
         const novasDuplas = tentativaDuplas.filter((d) => d.length === 2);
         setHistoricoDeDuplas((prev) => [...prev, { data: dataHoje, duplas: novasDuplas }]);
+        await salvarDuplasSorteadas(tentativaDuplas);
         await salvarHistoricoDeDuplas(dataHoje, novasDuplas);
-
+        carregarHistoricoDeDuplas()
         return;
       }
 
@@ -129,22 +173,6 @@ function App() {
     }
 
     alert('Não foi possível gerar duplas sem repetir. Tente reorganizar os lados.');
-  };
-
-  const limparHistorico = () => {
-    if (window.confirm('Tem certeza que deseja limpar o histórico de duplas?')) {
-      setHistoricoDeDuplas([]);
-    }
-  };
-
-  const agruparPorData = () => {
-    const agrupado = {};
-    historicoDeDuplas.forEach((entrada) => {
-      const data = entrada.data;
-      if (!agrupado[data]) agrupado[data] = [];
-      agrupado[data].push(...entrada.duplas);
-    });
-    return agrupado;
   };
 
   const corFundo = temaEscuro ? '#121212' : '#fff';
@@ -178,7 +206,7 @@ function App() {
                   key={index}
                   onClick={() => togglePresenca(jogador.apelido)}
                   style={{
-                    backgroundColor: estaConfirmado ? '#2ecc71' : corCardFundo,
+                    backgroundColor: estaConfirmado ? '#2c6' : corCardFundo,
                     border: '2px solid',
                     borderColor: estaConfirmado ? '#2ecc71' : corCardBorda,
                     borderRadius: '1rem',
@@ -191,15 +219,23 @@ function App() {
                   <img
                     src={jogador.foto}
                     alt={jogador.apelido}
-                    style={{ width: '60px', height: '60px', borderRadius: '50%', objectFit: 'cover', marginBottom: '0.5rem' }}
+                    style={{
+                      width: '60px',
+                      height: '60px',
+                      borderRadius: '50%',
+                      objectFit: 'cover',
+                      marginBottom: '0.4rem',
+                    }}
                   />
                   <div><strong>{jogador.apelido}</strong></div>
                   {estaConfirmado && (
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '0.3rem', marginTop: '0.3rem' }}>
                       <button onClick={(e) => { e.stopPropagation(); escolherLado(jogador.apelido, 'esquerda'); }}
-                        style={{ backgroundColor: lado === 'esquerda' ? '#3498db' : '#888', color: '#fff', fontSize: '0.75rem', borderRadius: '0.4rem', border: 'none', padding: '0.2rem 0.4rem' }}>Esq.</button>
+                        style={{ backgroundColor: lado === 'esquerda' ? '#3498db' : '#888', border: '1px solid #ccc', padding: '0.2rem 0.4rem', fontSize: '0.75rem', borderRadius: '0.4rem', color: '#fff' }}>
+                        Esq.</button>
                       <button onClick={(e) => { e.stopPropagation(); escolherLado(jogador.apelido, 'direita'); }}
-                        style={{ backgroundColor: lado === 'direita' ? '#3498db' : '#888', color: '#fff', fontSize: '0.75rem', borderRadius: '0.4rem', border: 'none', padding: '0.2rem 0.4rem' }}>Dir.</button>
+                        style={{ backgroundColor: lado === 'direita' ? '#3498db' : '#888', border: '1px solid #ccc', padding: '0.2rem 0.4rem', fontSize: '0.75rem', borderRadius: '0.4rem', color: '#fff' }}>
+                        Dir.</button>
                     </div>
                   )}
                 </div>
@@ -211,56 +247,56 @@ function App() {
             <button
               onClick={sortearDuplas}
               disabled={confirmados.length < 4 || confirmados.some((apelido) => !ladosEscolhidos[apelido])}
-              style={{ backgroundColor: '#3498db', color: '#fff', padding: '0.75rem 1.5rem', fontSize: '1rem', border: 'none', borderRadius: '0.5rem', cursor: 'pointer' }}
-            >
+              style={{ backgroundColor: '#3498db', color: '#fff', padding: '0.75rem 1.5rem', fontSize: '1rem', border: 'none', borderRadius: '0.5rem', cursor: 'pointer' }}>
               Sortear Duplas
             </button>
           </div>
         </>
       )}
 
-      {abaAtiva === 'resultados' && (
-        <div style={{ marginTop: '2rem' }}>
-          <h2>Duplas Sorteadas:</h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem' }}>
-            {duplas.map((dupla, index) => (
-              <div key={index} style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <strong>Dupla {index + 1}:</strong>
-                {dupla.map((apelido) => {
-                  const jogador = jogadores.find(j => j.apelido === apelido);
-                  return (
-                    <div key={apelido} style={{ textAlign: 'center' }}>
-                      <img src={jogador?.foto} alt={apelido} style={{ width: '50px', height: '50px', borderRadius: '50%', objectFit: 'cover' }} />
-                      <div style={{ fontSize: '0.85rem' }}>{apelido}</div>
-                    </div>
-                  );
-                })}
-              </div>
-            ))}
-          </div>
+    {abaAtiva === 'resultados' && (
+      <div style={{ marginTop: '2rem' }}>
 
-          <div style={{ marginTop: '2rem' }}>
-            <h3>Histórico de Duplas por Data:</h3>
-            {Object.entries(agruparPorData()).map(([data, duplas], idx) => (
-              <div key={idx} style={{ marginBottom: '1.5rem' }}>
-                <h4 style={{ marginBottom: '0.5rem' }}>📅 {data}</h4>
-                <ul>
-                  {duplas.map((dupla, i) => (
-                    <li key={i}>{dupla.join(' & ')}</li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
+{/* Duplas sorteadas atualmente */}
+<h2>Duplas Sorteadas:</h2>
+{duplas.length === 0 && <p>Nenhuma dupla sorteada.</p>}
+{duplas.map((dupla, index) => (
+  <div key={index} style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem', gap: '2rem' }}>
+    <strong>Dupla {index + 1}:</strong>
+    {dupla.map((apelido) => {
+      const jogador = jogadores.find((j) => j.apelido === apelido);
+      return (
+        <div key={apelido} style={{ textAlign: 'center' }}>
+          <img
+            src={jogador?.foto}
+            alt={apelido}
+            style={{ width: '50px', height: '50px', borderRadius: '50%', objectFit: 'cover' }}
+          />
+          <div>{apelido}</div>
+        </div>
+      );
+    })}
+  </div>
+))}
 
-          <div style={{ marginTop: '2rem' }}>
-            <button
-              onClick={limparHistorico}
-              style={{ backgroundColor: '#e74c3c', color: '#fff', padding: '0.5rem 1rem', fontSize: '1rem', border: 'none', borderRadius: '0.5rem', cursor: 'pointer' }}
-            >
-              🧹 Limpar Histórico
-            </button>
-          </div>
+          {/* Histórico de duplas anteriores */}
+          <h2 style={{ marginTop: '2rem' }}>📅 Histórico de Duplas:</h2>
+          {historicoDeDuplas.length === 0 && <p>Nenhum histórico salvo.</p>}
+          {historicoDeDuplas.map((entrada, index) => (
+            <div key={index} style={{ marginBottom: '1rem' }}>
+              <h4>📅 {entrada.data}</h4>
+              <ul>
+                {entrada.duplas.map((dupla, i) => (
+                  <li key={i}>{dupla.join(' & ')}</li>
+                ))}
+              </ul>
+            </div>
+          ))}
+
+
+          <button onClick={limparHistorico} style={{ marginTop: '1rem', backgroundColor: '#e74c3c', color: '#fff', border: 'none', borderRadius: '0.5rem', padding: '0.5rem 1rem', cursor: 'pointer' }}>
+            🧹 Limpar Histórico
+          </button>
         </div>
       )}
     </div>
@@ -269,6 +305,5 @@ function App() {
 
 export default App;
 
-
-// git add . && git commit -m "ajuste firebase" && git push origin main
+// git add . && git commit -m "ajuste firebase full" && git push origin main
 

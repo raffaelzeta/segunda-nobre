@@ -12,7 +12,7 @@ const jogadores = [
       foto: '/fotos/AndreNery.png'
     },
     {
-      apelido: 'Hermano',
+      apelido: 'Argentino',
       nome: 'Andres',
     //   ladoPrincipal: 'esquerda',
       foto: '/fotos/Andres.png'
@@ -79,12 +79,12 @@ const jogadores = [
         // ladoPrincipal: 'direita',
         foto: '/fotos/Sunga.png'
       },
-      {
-        apelido: 'Rafão',
-        nome: 'Rafael',
-        // ladoPrincipal: 'esquerda',
-        foto: '/fotos/Rafao.png'
-      },
+    //   {
+    //     apelido: 'Rafão',
+    //     nome: 'Rafael',
+    //     // ladoPrincipal: 'esquerda',
+    //     foto: '/fotos/Rafao.png'
+    //   },
       {
         apelido: 'Barbas',
         nome: 'Rodrigo',
