@@ -10,6 +10,7 @@ function App() {
   const [historicoDeDuplas, setHistoricoDeDuplas] = useState([]);
   const [temaEscuro, setTemaEscuro] = useState(false);
   const [abaAtiva, setAbaAtiva] = useState('presenca');
+  const [modoAdmin, setModoAdmin] = useState(false);
 
   const partidaId = 'partida-do-dia';
 
@@ -45,7 +46,21 @@ function App() {
     });
     setHistoricoDeDuplas([]);
   };
-
+  const resetarDia = async () => {
+    const ok = window.confirm('Tem certeza que deseja resetar o dia? Isso vai apagar presenças, lados e duplas sorteadas.');
+    if (!ok) return;
+  
+    await Promise.all([
+      setDoc(doc(db, 'presencas', partidaId), { confirmados: [] }),
+      setDoc(doc(db, 'lados', partidaId), {}),
+      setDoc(doc(db, 'sorteioAtual', partidaId), { duplas: [] })
+    ]);
+  
+    setConfirmados([]);
+    setLadosEscolhidos({});
+    setDuplas([]);
+  };
+  
   useEffect(() => {
     const unsubPresencas = onSnapshot(doc(db, 'presencas', partidaId), (docSnap) => {
       if (docSnap.exists()) {
@@ -59,18 +74,22 @@ function App() {
       }
     });
 
-    const unsubDuplas = onSnapshot(doc(db, 'sorteioAtual', partidaId), (docSnap) => {
+
+    const unsubDuplas = onSnapshot(doc(db, 'sorteioAtual', partidaId), async (docSnap) => {
       if (docSnap.exists()) {
         const duplasSalvas = docSnap.data().duplas || [];
         setDuplas(duplasSalvas);
-    
-        // Atualiza o histórico local também se ainda não tiver sido adicionado
+
         const dataHoje = new Date().toLocaleDateString('pt-BR');
-        const jaExiste = historicoDeDuplas.some((entrada) => entrada.data === dataHoje);
-    
-        if (!jaExiste) {
-          const novasDuplas = duplasSalvas.filter((d) => d.length === 2);
-          // setHistoricoDeDuplas((prev) => [...prev, { data: dataHoje, duplas: novasDuplas }]);
+        const novasDuplas = duplasSalvas.filter((d) => d.length === 2);
+
+        // Verifica se já existe essa data no histórico
+        const querySnapshot = await getDocs(collection(db, 'historicoDuplas'));
+        const jaExiste = querySnapshot.docs.some((doc) => doc.data().data === dataHoje);
+
+        if (!jaExiste && novasDuplas.length > 0) {
+          await salvarHistoricoDeDuplas(dataHoje, novasDuplas);
+          carregarHistoricoDeDuplas();
         }
       }
     });
@@ -162,10 +181,10 @@ function App() {
 
         const dataHoje = new Date().toLocaleDateString('pt-BR');
         const novasDuplas = tentativaDuplas.filter((d) => d.length === 2);
-        setHistoricoDeDuplas((prev) => [...prev, { data: dataHoje, duplas: novasDuplas }]);
         await salvarDuplasSorteadas(tentativaDuplas);
         await salvarHistoricoDeDuplas(dataHoje, novasDuplas);
-        carregarHistoricoDeDuplas()
+
+        carregarHistoricoDeDuplas();
         return;
       }
 
@@ -244,13 +263,48 @@ function App() {
           </div>
 
           <div style={{ marginTop: '2rem' }}>
-            <button
-              onClick={sortearDuplas}
-              disabled={confirmados.length < 4 || confirmados.some((apelido) => !ladosEscolhidos[apelido])}
-              style={{ backgroundColor: '#3498db', color: '#fff', padding: '0.75rem 1.5rem', fontSize: '1rem', border: 'none', borderRadius: '0.5rem', cursor: 'pointer' }}>
-              Sortear Duplas
-            </button>
+            
+          <button
+  onClick={() => {
+    const senha = prompt("Digite a senha para sortear as duplas:");
+    if (senha === "inss") {
+      sortearDuplas();
+    } else if (senha !== null) {
+      alert("Senha incorreta.");
+    }
+  }}
+  disabled={confirmados.length < 4 || confirmados.some((apelido) => !ladosEscolhidos[apelido])}
+  style={{ backgroundColor: '#3498db', color: '#fff', padding: '0.75rem 1.5rem', fontSize: '1rem', border: 'none', borderRadius: '0.5rem', cursor: 'pointer' }}>
+  Sortear Duplas
+</button>
+
+
           </div>
+          <div style={{ marginTop: '1rem' }}>
+          <button
+          onClick={() => {
+            const senha = prompt("Digite a senha para resetar o dia:");
+            if (senha === "inss") {
+              limparHistorico();
+            } else if (senha !== null) {
+              alert("Senha incorreta.");
+            }
+          }}
+          style={{
+            marginTop: '1rem',
+            backgroundColor: '#e74c3c',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '0.5rem',
+            padding: '0.5rem 1rem',
+            cursor: 'pointer'
+          }}
+        >
+          🔄Resetar
+        </button>
+
+</div>
+
         </>
       )}
 
@@ -294,9 +348,21 @@ function App() {
           ))}
 
 
-          <button onClick={limparHistorico} style={{ marginTop: '1rem', backgroundColor: '#e74c3c', color: '#fff', border: 'none', borderRadius: '0.5rem', padding: '0.5rem 1rem', cursor: 'pointer' }}>
+          <button
+            onClick={() => {
+              const senha = prompt("Digite a senha para limpar o histórico:");
+              if (senha === "inss") {
+                limparHistorico();
+              } else if (senha !== null) {
+                alert("Senha incorreta.");
+              }
+            }}
+            style={{ marginTop: '1rem', backgroundColor: '#e74c3c', color: '#fff', border: 'none', borderRadius: '0.5rem', padding: '0.5rem 1rem', cursor: 'pointer' }}
+          >
             🧹 Limpar Histórico
           </button>
+
+
         </div>
       )}
     </div>
@@ -305,5 +371,5 @@ function App() {
 
 export default App;
 
-// git add . && git commit -m "ajuste firebase full" && git push origin main
+// git add . && git commit -m "ajuste firebase full2" && git push origin main
 
