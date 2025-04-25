@@ -73,3 +73,8 @@ export default function HistoricoDuplas() {
     </div>
   );
 }
+
+
+
+// NÃO APAGAR - CÓDIGO PARA PUBLICAR AS ALTERAÇÕES
+// git add . && git commit -m "reconstrução" && git push

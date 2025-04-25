@@ -117,11 +117,17 @@ const handleLimparHistorico = () => {
           top: 0,
           backgroundColor: '#fff',
           zIndex: 100,
-          padding: '2rem 2rem 1rem'
+           /* tamanho espaço no topo e embaixo */
+          padding: '1rem 1rem 0.5rem',
+           /* leve sombra para destacar */
+          // boxShadow: '0 1px 4px rgba(0,0,0,0.1)'
         }}
       >
-        <h1 style={{ fontSize: '2rem', margin: 0 }}>Segunda Nobre</h1>
-        <nav style={{ display: 'flex', gap: '1rem', margin: '1rem 0' }}>
+        <h1 style={{ fontSize: '1.5rem', margin: 0 }}>Segunda Nobre</h1>
+        <nav style={{ display: 'flex', gap: '0.5rem', margin: '0.5rem 0',overflowX: 'auto',
+        /* opcional: esconder scrollbar no webkit */
+         scrollbarWidth: 'none'
+         }}>
           {['presenca', 'sorteio', 'historico'].map(tab => {
             const labels = { presenca: 'Presença', sorteio: 'Sorteio', historico: 'Histórico' };
             const isActive = aba === tab;
@@ -130,13 +136,14 @@ const handleLimparHistorico = () => {
                 key={tab}
                 onClick={() => setAba(tab)}
                 style={{
-                  flex: 1,
-                  padding: '0.75rem',
+                  flex: 'none',
+                  padding: '0.5rem 0.75rem',
                   background: 'transparent',
                   border: 'none',
-                  borderBottom: isActive ? '3px solid #3498db' : '3px solid transparent',
+                  borderBottom: isActive ? '2px solid #3498db' : '2px solid transparent',
                   color: isActive ? '#3498db' : '#555',
                   fontWeight: isActive ? 'bold' : 'normal',
+                  fontSize: '0.9rem',
                   cursor: 'pointer',
                   transition: 'color 0.2s, border-bottom-color 0.2s'
                 }}
