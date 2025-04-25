@@ -34,10 +34,10 @@ export default function ConfirmadosList({ onSort }) {
                 <div style={{display:'flex',justifyContent:'center',gap:8,marginTop:8}}>
                   <button onClick={e=>{e.stopPropagation(); escolherLado(j.apelido,'esquerda');}}
                     style={{padding:'0.25rem 0.5rem',border:'none',borderRadius:'0.3rem',backgroundColor: ladoSel==='esquerda'?'#2ecc71':'#ccc',color:'#fff',cursor:'pointer'}}
-                  >Esq.</button>
+                  >E</button>
                   <button onClick={e=>{e.stopPropagation(); escolherLado(j.apelido,'direita');}}
                     style={{padding:'0.25rem 0.5rem',border:'none',borderRadius:'0.3rem',backgroundColor: ladoSel==='direita'?'#2ecc71':'#ccc',color:'#fff',cursor:'pointer',marginLeft:4}}
-                  >Dir.</button>
+                  >D</button>
                 </div>
               )}
             </li>
