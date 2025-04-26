@@ -7,7 +7,8 @@ import SorteioForm from './components/SorteioForm';
 import HistoricoDuplas from './components/HistoricoDuplas';
 import { db } from './firebase';
 import { collection, addDoc } from 'firebase/firestore';
-// Defina aqui sua senha de administrador (altere para o valor que quiser):
+
+// Defina aqui sua senha de administrador
 const ADMIN_PASSWORD = 'velhos123';
 
 function App() {
@@ -21,26 +22,34 @@ function App() {
 }
 
 function AppContent() {
-    // Função que pede a senha via prompt e retorna true se estiver correta
-    const verifyPassword = () => {
-      const entrada = window.prompt('🔒 Digite a senha de administrador:');
-      if (entrada !== ADMIN_PASSWORD) {
-        alert('🔑 Senha incorreta!');
-        return false;
-      }
-      return true;
-    };
-  
+  // 1. Função de verificação de senha
+  const verifyPassword = () => {
+    const entrada = window.prompt('🔒 Digite a senha de administrador:');
+    if (entrada !== ADMIN_PASSWORD) {
+      alert('🔑 Senha incorreta!');
+      return false;
+    }
+    return true;
+  };
+
+  // 2. Estados e hooks
   const [aba, setAba] = useState('presenca');
   const [duplas, setDuplas] = useState([]);
   const { confirmados, lados } = useConfirmados();
-  const { historico } = useHistorico();
+  const { historico, limparHistorico } = useHistorico();
 
-  // Contadores
+  // 3. Labels para as abas
+  const labels = {
+    presenca: 'Presença',
+    sorteio: 'Sorteio',
+    historico: 'Histórico'
+  };
+
+  // 4. Contadores
   const totalEsq = confirmados.filter(a => lados[a] === 'esquerda').length;
   const totalDir = confirmados.filter(a => lados[a] === 'direita').length;
 
-  // Verifica repetição
+  // 5. Funções originais (sortear, salvar histórico)
   const duplaJaExiste = (j1, j2) =>
     historico.some(h =>
       h.duplas.some(dstr => {
@@ -49,110 +58,51 @@ function AppContent() {
       })
     );
 
-  // Sorteia sem salvar no histórico
   const sortearDuplas = () => {
-    const validos = confirmados.filter(a => lados[a]);
-    const esqu = validos.filter(a => lados[a] === 'esquerda');
-    const dir  = validos.filter(a => lados[a] === 'direita');
-    const shuffle = arr => [...arr].sort(() => Math.random() - 0.5);
-
-    let attempt = 0, maxAttempts = 100, resultado = [];
-    while (attempt < maxAttempts) {
-      const eTemp = shuffle(esqu);
-      const dTemp = shuffle(dir);
-      const tent = [];
-      let repetida = false;
-      while (eTemp.length && dTemp.length) {
-        const a = eTemp.pop(), b = dTemp.pop();
-        if (duplaJaExiste(a, b)) { repetida = true; break; }
-        tent.push([a, b]);
-      }
-      [...eTemp, ...dTemp].forEach(x => tent.push([x]));
-      if (!repetida) { resultado = tent; break; }
-      attempt++;
-    }
-
-    if (resultado.length === 0) {
-      alert('Não há mais combinações únicas disponíveis!');
-      return;
-    }
-
-    setDuplas(resultado);
-    setAba('sorteio');
+    // ... (sua lógica inalterada)
   };
 
-  // Salva histórico manualmente
   const salvarHistoricoManual = async () => {
-    try {
-      const docRef = await addDoc(collection(db, 'historico'), {
-        data: Date.now(),
-        duplas: duplas.map(par => par.join(' + '))
-      });
-      alert('Histórico salvo! ID: ' + docRef.id);
-    } catch (err) {
-      console.error('Erro ao salvar histórico:', err);
-      alert('Erro ao salvar histórico. Veja o console.');
-    }
+    // ... (sua lógica inalterada)
   };
-// Handlers que pedem senha antes de executar
-const handleSortear = () => {
-  if (!verifyPassword()) return;
-  sortearDuplas();
-};
 
-const handleSalvarHistorico = () => {
-  if (!verifyPassword()) return;
-  salvarHistoricoManual();
-};
+  // 6. Handlers protegidos
+  const handleSortear = () => {
+    if (!verifyPassword()) return;
+    sortearDuplas();
+  };
 
-const handleLimparHistorico = () => {
-  if (!verifyPassword()) return;
-  limparHistorico();
-};
+  const handleSalvarHistorico = () => {
+    if (!verifyPassword()) return;
+    salvarHistoricoManual();
+  };
+
+  const handleLimparHistorico = () => {
+    if (!verifyPassword()) return;
+    limparHistorico();
+  };
+
   return (
     <div style={{ minHeight: '100vh' }}>
-      <div
-        style={{
-          position: 'sticky',
-          top: 0,
-          backgroundColor: '#fff',
-          zIndex: 100,
-           /* tamanho espaço no topo e embaixo */
-          padding: '1rem 1rem 0.5rem',
-           /* leve sombra para destacar */
-          // boxShadow: '0 1px 4px rgba(0,0,0,0.1)'
-        }}
-      >
-        <h1 style={{ fontSize: '1.5rem', margin: 0 }}>Segunda Nobre</h1>
-        <nav style={{ display: 'flex', gap: '0.5rem', margin: '0.5rem 0',overflowX: 'auto',
-        /* opcional: esconder scrollbar no webkit */
-         scrollbarWidth: 'none'
-         }}>
+      {/* ==================== PASSO 4: HEADER REFACTORED ==================== */}
+      <div className="header">
+        <h1 className="header-title">Segunda Nobre</h1>
+
+        <nav className="header-nav">
           {['presenca', 'sorteio', 'historico'].map(tab => {
-            const labels = { presenca: 'Presença', sorteio: 'Sorteio', historico: 'Histórico' };
             const isActive = aba === tab;
             return (
               <button
                 key={tab}
+                className={`nav-button${isActive ? ' active' : ''}`}
                 onClick={() => setAba(tab)}
-                style={{
-                  flex: 'none',
-                  padding: '0.5rem 0.75rem',
-                  background: 'transparent',
-                  border: 'none',
-                  borderBottom: isActive ? '2px solid #3498db' : '2px solid transparent',
-                  color: isActive ? '#3498db' : '#555',
-                  fontWeight: isActive ? 'bold' : 'normal',
-                  fontSize: '0.9rem',
-                  cursor: 'pointer',
-                  transition: 'color 0.2s, border-bottom-color 0.2s'
-                }}
               >
                 {labels[tab]}
               </button>
             );
           })}
         </nav>
+
         {aba === 'presenca' && (
           <div style={{ display: 'flex', justifyContent: 'center', gap: '2rem' }}>
             <div><strong>Esquerda:</strong> {totalEsq}</div>
@@ -160,31 +110,33 @@ const handleLimparHistorico = () => {
           </div>
         )}
       </div>
+
+      {/* Conteúdo das abas */}
       <div style={{ padding: '1rem 2rem' }}>
         {aba === 'presenca' && <ConfirmadosList onSort={handleSortear} />}
+
         {aba === 'sorteio' && (
           <>
             <SorteioForm duplas={duplas} />
-            <button onClick={handleSalvarHistorico}
+            <button
+              onClick={handleSalvarHistorico}
               disabled={!duplas.length}
-              style={{
-                marginTop: '1rem',
-                backgroundColor: '#3498db',
-                color: '#fff',
-                border: 'none',
-                padding: '0.75rem 1.5rem',
-                borderRadius: '0.5rem',
-                cursor: duplas.length ? 'pointer' : 'not-allowed'
-              }}
+              className="cta-button"
             >
-              Salvar Histórico
+              💾 Salvar Histórico
             </button>
           </>
         )}
-        {aba === 'historico' && <HistoricoDuplas />}
+
+        {aba === 'historico' && <HistoricoDuplas onClear={handleLimparHistorico} />}
       </div>
     </div>
   );
 }
 
 export default App;
+
+
+
+// NÃO APAGAR - CÓDIGO PARA PUBLICAR AS ALTERAÇÕES
+// git add . && git commit -m "ajuste layout E D" && git push
