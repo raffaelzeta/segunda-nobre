@@ -81,17 +81,17 @@ h1, h2, h3 {
 
 /* HEADER GRADIENTE E ARREDONDADO */
 .header {
-  background: linear-gradient(90deg, #ff7e5f, #feb47b);
+  background: transparent;
   padding: 1rem 1.5rem;
   border-bottom-left-radius: 16px;
   border-bottom-right-radius: 16px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  /* box-shadow: 0 4px 8px rgba(0,0,0,0.1); */
   position: sticky;
   top: 0;
   z-index: 100;
 }
 .header-title {
-  color: #fff;
+  color: #ff7e5f;  /* laranja vibrante */
   font-size: 1.6rem;
   font-weight: 700;
 }
@@ -105,23 +105,24 @@ h1, h2, h3 {
   scrollbar-width: none; /* Firefox */
 }
 .header-nav::-webkit-scrollbar { display: none; }
+/* Botões não selecionados: */
 .nav-button {
   flex: none;
   padding: 0.5rem 1rem;
   border: none;
-  background: rgba(255,255,255,0.3);
-  color: #fff;
   border-radius: 999px;
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.2s, color 0.2s;
+  /* cores novas */
+  background: #f0f0f0;
+  color: #555;
 }
 .nav-button.active {
-  background: #fff;
-  color: #ff7e5f;
+  background: #ff7e5f;
+  color: #fff;
 }
-
 /* BOTÕES CTA EM “PÍLULA” */
 .cta-button {
   display: inline-flex;
