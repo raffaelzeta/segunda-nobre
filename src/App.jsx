@@ -138,7 +138,7 @@ return (
       </nav>
 
       {aba === 'presenca' && (
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '2rem' }}>
+        <div style={{marginTop: '0.75rem', display: 'flex', justifyContent: 'center', gap: '2rem' }}>
           <div><strong>Esquerda:</strong> {totalEsq}</div>
           <div><strong>Direita:</strong> {totalDir}</div>
         </div>
@@ -172,4 +172,4 @@ export default App;
 
 
 // NÃO APAGAR - CÓDIGO PARA PUBLICAR AS ALTERAÇÕES
-// git add . && git commit -m "ajuste layout E D" && git push
+// git add . && git commit -m "ajuste layout cores" && git push
