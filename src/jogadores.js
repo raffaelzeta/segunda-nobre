@@ -79,12 +79,6 @@ const jogadores = [
         // ladoPrincipal: 'direita',
         foto: '/fotos/Sunga.png'
       },
-    //   {
-    //     apelido: 'Rafão',
-    //     nome: 'Rafael',
-    //     // ladoPrincipal: 'esquerda',
-    //     foto: '/fotos/Rafao.png'
-    //   },
       {
         apelido: 'Barbas',
         nome: 'Rodrigo',
@@ -103,6 +97,18 @@ const jogadores = [
         // ladoPrincipal: 'direita',
         foto: '/fotos/Will.png'
       },
+      {
+        apelido: 'Flávio',
+        nome: 'Flávio',
+        // ladoPrincipal: 'esquerda',
+        foto: '/fotos/Flavio.png'
+      },
+      {
+        apelido: 'Leca',
+        nome: 'Alex',
+        // ladoPrincipal: 'esquerda',
+        foto: '/fotos/Leca.png'
+      }
     // Adicione o restante aqui...
   ]
   
