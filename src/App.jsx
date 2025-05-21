@@ -172,4 +172,4 @@ export default App;
 
 
 // NÃO APAGAR - CÓDIGO PARA PUBLICAR AS ALTERAÇÕES
-// git add . && git commit -m "final_20250425" && git push
+// git add . && git commit -m "novos_players" && git push
