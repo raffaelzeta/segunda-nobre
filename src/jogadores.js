@@ -108,6 +108,12 @@ const jogadores = [
         nome: 'Alex',
         // ladoPrincipal: 'esquerda',
         foto: '/fotos/Leca.png'
+      },
+      {
+        apelido: 'Sono',
+        nome: 'Felipe',
+        // ladoPrincipal: 'esquerda',
+        foto: '/fotos/Sono.jpg'
       }
     // Adicione o restante aqui...
   ]
