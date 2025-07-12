@@ -5,12 +5,12 @@ const jogadores = [
     //   ladoPrincipal: 'esquerda',
       foto: '/fotos/Zeta.jpg'
     },
-    {
-      apelido: 'Dé Nery',
-      nome: 'André',
-    //   ladoPrincipal: 'esquerda',
-      foto: '/fotos/AndreNery.png'
-    },
+    // {
+    //   apelido: 'Dé Nery',
+    //   nome: 'André',
+    // //   ladoPrincipal: 'esquerda',
+    //   foto: '/fotos/AndreNery.png'
+    // },
     {
       apelido: 'Argentino',
       nome: 'Andres',
@@ -45,7 +45,7 @@ const jogadores = [
       },
       {
         apelido: 'Ewinho',
-        nome: 'Ewerson',
+        nome: 'Ewerton',
         // ladoPrincipal: 'esquerda',
         foto: '/fotos/Ewinho.png'
       },
@@ -61,12 +61,12 @@ const jogadores = [
         // ladoPrincipal: 'direita',
         foto: '/fotos/Gu.png'
       },
-      {
-        apelido: 'Lê Nery',
-        nome: 'Leandro',
-        // ladoPrincipal: 'direita',
-        foto: '/fotos/LeNery.png'
-      },
+      // {
+      //   apelido: 'Lê Nery',
+      //   nome: 'Leandro',
+      //   // ladoPrincipal: 'direita',
+      //   foto: '/fotos/LeNery.png'
+      // },
       {
         apelido: 'Marcão',
         nome: 'Marcos',
@@ -103,17 +103,23 @@ const jogadores = [
         // ladoPrincipal: 'esquerda',
         foto: '/fotos/Flavio.png'
       },
-      {
-        apelido: 'Leca',
-        nome: 'Alex',
-        // ladoPrincipal: 'esquerda',
-        foto: '/fotos/Leca.png'
-      },
+      // {
+      //   apelido: 'Leca',
+      //   nome: 'Alex',
+      //   // ladoPrincipal: 'esquerda',
+      //   foto: '/fotos/Leca.png'
+      // },
       {
         apelido: 'Sono',
         nome: 'Felipe',
         // ladoPrincipal: 'esquerda',
         foto: '/fotos/Sono.jpg'
+      },
+      {
+        apelido: 'Marquinhos',
+        nome: 'Marcos',
+        // ladoPrincipal: 'esquerda',
+        foto: '/fotos/Marquinhos.png'
       }
     // Adicione o restante aqui...
   ]
