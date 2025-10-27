@@ -126,6 +126,12 @@ const jogadores = [
         nome: 'Kauê',
         // ladoPrincipal: 'direita',
         foto: '/fotos/Kaue.png'
+      },
+      {
+        apelido: 'Vasquinho',
+        nome: 'Guillherme',
+        // ladoPrincipal: 'direita',
+        foto: '/fotos/Vasquinho.png'
       }
     // Adicione o restante aqui...
   ]
