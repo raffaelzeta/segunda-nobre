@@ -97,12 +97,12 @@ const jogadores = [
         // ladoPrincipal: 'direita',
         foto: '/fotos/Will.png'
       },
-      {
-        apelido: 'Flávio',
-        nome: 'Flávio',
-        // ladoPrincipal: 'esquerda',
-        foto: '/fotos/Flavio.png'
-      },
+      // {
+      //   apelido: 'Flávio',
+      //   nome: 'Flávio',
+      //   // ladoPrincipal: 'esquerda',
+      //   foto: '/fotos/Flavio.png'
+      // },
       {
         apelido: 'Gimenez',
         nome: 'Ricardo',
