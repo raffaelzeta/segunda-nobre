@@ -107,7 +107,7 @@ const jogadores = [
         apelido: 'Gimenez',
         nome: 'Ricardo',
         // ladoPrincipal: 'esquerda',
-        foto: '/fotos/Gimezez.png'
+        foto: '/fotos/Gimenez.png'
       },
       {
         apelido: 'Sono',
