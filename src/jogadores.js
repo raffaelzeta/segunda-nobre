@@ -97,12 +97,12 @@ const jogadores = [
         // ladoPrincipal: 'direita',
         foto: '/fotos/Will.png'
       },
-      {
-        apelido: 'Flávio',
-        nome: 'Flávio',
-        // ladoPrincipal: 'esquerda',
-        foto: '/fotos/Flavio.png'
-      },
+      // {
+      //   apelido: 'Flávio',
+      //   nome: 'Flávio',
+      //   // ladoPrincipal: 'esquerda',
+      //   foto: '/fotos/Flavio.png'
+      // },
       {
         apelido: 'Gimenez',
         nome: 'Ricardo',
@@ -121,17 +121,23 @@ const jogadores = [
         // ladoPrincipal: 'direita',
         foto: '/fotos/Marquinhos.png'
       },
-            {
-        apelido: 'Kauê',
-        nome: 'Kauê',
-        // ladoPrincipal: 'direita',
-        foto: '/fotos/Kaue.png'
-      },
+      //       {
+      //   apelido: 'Kauê',
+      //   nome: 'Kauê',
+      //   // ladoPrincipal: 'direita',
+      //   foto: '/fotos/Kaue.png'
+      // },
       {
         apelido: 'Vasquinho',
         nome: 'Guillherme',
         // ladoPrincipal: 'direita',
         foto: '/fotos/Vasquinho.png'
+      },
+      {
+        apelido: 'Fe',
+        nome: 'Felipe',
+        // ladoPrincipal: 'direita',
+        foto: '/fotos/Fe.png'
       }
     // Adicione o restante aqui...
   ]
