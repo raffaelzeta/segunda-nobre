@@ -133,12 +133,12 @@ const jogadores = [
         // ladoPrincipal: 'direita',
         foto: '/fotos/Vasquinho.png'
       },
-      {
-        apelido: 'Fe',
-        nome: 'Felipe',
-        // ladoPrincipal: 'direita',
-        foto: '/fotos/Fe.png'
-      },
+      // {
+      //   apelido: 'Fe',
+      //   nome: 'Felipe',
+      //   // ladoPrincipal: 'direita',
+      //   foto: '/fotos/Fe.png'
+      // },
       {
         apelido: 'Daniel',
         nome: 'Daniel',

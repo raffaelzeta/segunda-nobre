@@ -172,4 +172,4 @@ export default App;
 
 
 // NÃO APAGAR - CÓDIGO PARA PUBLICAR AS ALTERAÇÕES
-// git add . && git commit -m "inclui Dan" && git push
+// git add . && git commit -m "inclui Daniel" && git push
