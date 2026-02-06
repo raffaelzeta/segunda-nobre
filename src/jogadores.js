@@ -85,12 +85,12 @@ const jogadores = [
         // ladoPrincipal: 'direita',
         foto: '/fotos/Barbas.jpg'
       },
-      {
-        apelido: 'Schimitd',
-        nome: 'Jeferson',
-        // ladoPrincipal: 'esquerda',
-        foto: '/fotos/Schimitd.png'
-      },
+      // {
+      //   apelido: 'Schimitd',
+      //   nome: 'Jeferson',
+      //   // ladoPrincipal: 'esquerda',
+      //   foto: '/fotos/Schimitd.png'
+      // },
       {
         apelido: 'Will',
         nome: 'William',
@@ -136,6 +136,12 @@ const jogadores = [
       {
         apelido: 'Fe',
         nome: 'Felipe',
+        // ladoPrincipal: 'direita',
+        foto: '/fotos/Fe.png'
+      },
+      {
+        apelido: 'Daniel',
+        nome: 'Daniel',
         // ladoPrincipal: 'direita',
         foto: '/fotos/Fe.png'
       }
