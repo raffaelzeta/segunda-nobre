@@ -143,7 +143,7 @@ const jogadores = [
         apelido: 'Daniel',
         nome: 'Daniel',
         // ladoPrincipal: 'direita',
-        foto: '/fotos/Fe.png'
+        foto: '/fotos/Daniel.png'
       }
     // Adicione o restante aqui...
   ]
