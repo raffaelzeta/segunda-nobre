@@ -61,12 +61,12 @@ const jogadores = [
         // ladoPrincipal: 'direita',
         foto: '/fotos/Gu.png'
       },
-      {
-        apelido: 'Lê Nery',
-        nome: 'Leandro',
-        // ladoPrincipal: 'direita',
-        foto: '/fotos/LeNery.png'
-      },
+      // {
+      //   apelido: 'Lê Nery',
+      //   nome: 'Leandro',
+      //   // ladoPrincipal: 'direita',
+      //   foto: '/fotos/LeNery.png'
+      // },
       {
         apelido: 'Marcão',
         nome: 'Marcos',
