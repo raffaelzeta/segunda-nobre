@@ -149,7 +149,7 @@ const jogadores = [
         apelido: 'Rafão',
         nome: 'Rafao_quiosque',
         // ladoPrincipal: 'direita',
-        foto: '/fotos/Rafao_quiosque.png'
+        foto: '/fotos/Rafao_quiosque.jpg'
       }
     // Adicione o restante aqui...
   ]
