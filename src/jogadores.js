@@ -104,10 +104,10 @@ const jogadores = [
       //   foto: '/fotos/Flavio.png'
       // },
       {
-        apelido: 'Gimenez',
-        nome: 'Ricardo',
+        apelido: 'Dena',
+        nome: 'Denilson',
         // ladoPrincipal: 'esquerda',
-        foto: '/fotos/Gimenez.png'
+        foto: '/fotos/Dena.png'
       },
       {
         apelido: 'Sono',
@@ -145,7 +145,7 @@ const jogadores = [
         // ladoPrincipal: 'direita',
         foto: '/fotos/Daniel.png'
       },
-          {
+      {
         apelido: 'Rafão',
         nome: 'Rafao_quiosque',
         // ladoPrincipal: 'direita',
