@@ -172,4 +172,4 @@ export default App;
 
 
 // NÃO APAGAR - CÓDIGO PARA PUBLICAR AS ALTERAÇÕES
-// git add . && git commit -m "inclui Dena_quiosque5" && git push
+// git add . && git commit -m "volta Le_quiosque5" && git push
