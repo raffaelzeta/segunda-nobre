@@ -145,12 +145,12 @@ const jogadores = [
         // ladoPrincipal: 'direita',
         foto: '/fotos/Daniel.png'
       },
-      {
-        apelido: 'Rafão',
-        nome: 'Rafao_quiosque',
-        // ladoPrincipal: 'direita',
-        foto: '/fotos/Rafao_quiosque.jpg'
-      },
+      // {
+      //   apelido: 'Rafão',
+      //   nome: 'Rafao_quiosque',
+      //   // ladoPrincipal: 'direita',
+      //   foto: '/fotos/Rafao_quiosque.jpg'
+      // },
       {
         apelido: 'Leca',
         nome: 'Alex',
